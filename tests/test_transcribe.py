@@ -1,11 +1,12 @@
 import threading
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 
 from app.errors import UnreadableAudio
 from app.factory import create_app
 from app.settings import ApiKey, Settings
-from app.transcriber import Transcript
+from app.transcriber import Transcript, _warmup
 from tests.conftest import SECRET_A, SECRET_B, hash_secret, post_clip
 
 
@@ -191,3 +192,27 @@ def test_a_running_call_blocks_the_next_one(tmp_audio) -> None:
         thread.join(5)
     assert box["response"].status_code == 200
     assert list(tmp_audio.iterdir()) == []
+
+
+def test_warmup_deletes_the_clip_and_discards_the_text(caplog) -> None:
+    seen: dict[str, object] = {}
+
+    class Model:
+        def transcribe(self, path: str, **kwargs: object) -> dict[str, str]:
+            seen["path"] = path
+            seen["kwargs"] = kwargs
+            assert Path(path).is_file()
+            return {"text": "SHOULD-NOT-LEAK", "language": "en"}
+
+    with caplog.at_level("DEBUG"):
+        _warmup(Model())
+
+    assert isinstance(seen["path"], str)
+    assert not Path(seen["path"]).exists()
+    assert seen["kwargs"] == {
+        "fp16": False,
+        "task": "transcribe",
+        "temperature": 0,
+        "verbose": False,
+    }
+    assert "SHOULD-NOT-LEAK" not in caplog.text

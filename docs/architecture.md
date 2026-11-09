@@ -27,7 +27,7 @@ Forbidden:
 
 `init.sh` requires `.env`, then `docker compose up --build -d`, then waits until `GET /healthz` is `200`.
 
-The image installs CPU PyTorch, then `openai-whisper` without letting that package replace the CPU wheel. The `small` weights are downloaded during `docker build`, into the image user's cache, so a later start does not need the network to load the model.
+The image installs CPU PyTorch, then `openai-whisper` without letting that package replace the CPU wheel. The `small` weights are downloaded during `docker build`, into the image user's cache, so a later start does not need the network to load the model. After the weights load, the process transcribes one silent clip before `/healthz` can return `ok`.
 
 ## Deployment shape
 

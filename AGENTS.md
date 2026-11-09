@@ -1,6 +1,6 @@
 # Map
 
-Whisper HTTP API. One API key per backend, as many as `WHISPER_KEYS` lists. Clip length is `probe_duration_seconds` in `whisper-api.conf` (shipped at 30) and 5 MiB. Model `small` on CPU. Audio is not stored.
+Whisper HTTP API. One API key per backend, as many as `WHISPER_KEYS` lists. Clip length is `probe_duration_seconds` in `whisper-api.conf` (shipped at 30) and 5 MiB. Model `small` on CPU. Startup transcribes one silent clip before the process reports ready. Audio is not stored.
 
 ## Read when the slice needs it
 

@@ -2,7 +2,7 @@
 
 ## Start
 
-The process exits before it listens when required configuration is missing or invalid. Required: at least one distinct API-key hash, `probe_duration_seconds` in the conf file, model `small`. The model object is loaded after listen starts. Until `load` finishes, `GET /healthz` is `503` and an authenticated transcription is `503` with `{"error":"not_ready"}`. A bad key is still `401` while the model is loading.
+The process exits before it listens when required configuration is missing or invalid. Required: at least one distinct API-key hash, `probe_duration_seconds` in the conf file, model `small`. The model object is loaded after listen starts. `load` then transcribes one silent clip and deletes it before the model is marked ready. That text is not logged. Until `load` finishes, `GET /healthz` is `503` and an authenticated transcription is `503` with `{"error":"not_ready"}`. A bad key is still `401` while the model is loading.
 
 A failed model load leaves the process not ready. It does not start serving transcriptions against an empty model.
 

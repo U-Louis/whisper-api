@@ -6,7 +6,7 @@ Any caller, including an unauthenticated probe, can see whether the model is loa
 
 ## Done-means
 
-- `GET /healthz` returns `200` and `{"status":"ok"}` when the model is loaded.
+- `GET /healthz` returns `200` and `{"status":"ok"}` when startup has loaded the model and finished its silent warmup transcription.
 - `GET /healthz` returns `503` and `{"status":"loading"}` before that.
 - The body has no key id, path, exception text, or secret.
 
