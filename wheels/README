@@ -1,0 +1,3 @@
+# Optional CPU torch wheels for a build host that cannot verify download.pytorch.org.
+# Leave this directory empty to let the image download torch itself.
+# To prefetch: pip download -d wheels torch --index-url https://download.pytorch.org/whl/cpu

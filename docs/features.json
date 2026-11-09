@@ -1,0 +1,89 @@
+[
+  {
+    "id": "F1",
+    "module": "M1",
+    "category": "functional",
+    "description": "A caller can see that the model is ready.",
+    "steps": [
+      "Boot the container and wait until the model has loaded",
+      "GET /healthz with no credentials",
+      "Receive 200 and {\"status\":\"ok\"}"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F2",
+    "module": "M1",
+    "category": "functional",
+    "description": "A caller can see that the model is not ready yet.",
+    "steps": [
+      "Start the process before the model load finishes",
+      "GET /healthz",
+      "Receive 503 and {\"status\":\"loading\"}"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F3",
+    "module": "M2",
+    "category": "functional",
+    "description": "Each configured application can authenticate with its own key.",
+    "steps": [
+      "POST /v1/transcribe with application A's bearer key and a short clip",
+      "See 200 and A's key id in the log, not the secret",
+      "Repeat with application B's key and see B's key id"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F4",
+    "module": "M2",
+    "category": "functional",
+    "description": "A request with no key and a request with an unknown key are refused the same way.",
+    "steps": [
+      "POST /v1/transcribe with no Authorization header",
+      "Receive 401 and {\"error\":\"unauthorized\"}",
+      "POST /v1/transcribe with a bearer token that matches neither hash",
+      "Receive the same status and the same body"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F5",
+    "module": "M3",
+    "category": "functional",
+    "description": "A short clip comes back as text and a language code, and the temp file is gone.",
+    "steps": [
+      "POST /v1/transcribe with a valid key and tests/fixtures/short.wav",
+      "Receive 200 and {\"text\",\"language\"} equal to tests/fixtures/short.expected.json",
+      "Confirm the temp directory has no clip left"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F6",
+    "module": "M3",
+    "category": "functional",
+    "description": "Audio over 5 MiB or over probe_duration_seconds is refused before the model runs.",
+    "steps": [
+      "POST a file part larger than 5242880 bytes with a valid key",
+      "Receive 413 and {\"error\":\"payload_too_large\"}",
+      "POST a readable clip longer than probe_duration_seconds from whisper-api.conf",
+      "Receive 422 and {\"error\":\"too_long\"}"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F7",
+    "module": "M3",
+    "category": "functional",
+    "description": "Unreadable bytes are refused, and a second call during inference is refused.",
+    "steps": [
+      "POST a valid key and a body that is not audio",
+      "Receive 422 and {\"error\":\"unreadable_audio\"}",
+      "Start a transcription that holds the only slot",
+      "POST a second valid call and receive 429 and {\"error\":\"busy\"}"
+    ],
+    "passes": false
+  }
+]

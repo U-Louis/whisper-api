@@ -1,0 +1,8 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+tmp-evidence/
+docs/evidence/bounds/run/
+wheels/*.whl

@@ -1,0 +1,7 @@
+# Installed after the CPU torch wheel. The image installs whisper with --no-deps.
+openai-whisper==20240930
+numba
+numpy
+tiktoken
+more-itertools
+tqdm
